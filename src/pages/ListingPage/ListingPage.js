@@ -32,6 +32,36 @@ const ListingPage = () => {
         searchByCopy.value = e.target.value
         setSearchBy(searchByCopy)
     }
+
+    const getUserListingForSearch = () => {
+        let options = {}
+        console.log(searchBy, "Seacrh by of Listing", search)
+        const type = ["Email", "Id", "Name", "MobileNumber", "PhoneNumber"];
+        if (type.includes(searchBy.value)) {
+            options = {
+                method: "GET",
+                url: `${process.env.REACT_APP_SERVER_PATH}/OperatorManagement/GetOperator`,
+                params: {
+                    IsActive: selectedValue === "IsActive" ? "true" : "false",
+                    [searchBy.value]: search
+                },
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem('token')
+                }
+            };
+        }
+        setLoading(true)
+        axios.request(options).then(function (response) {
+            console.log(response.data, "Listing");
+            console.log(response.data.Content.Count[0].RowsCount, "count");
+            setTotal(response.data.Content.Count[0].RowsCount)
+            setUsers(response.data.Content.ManageOperator)
+            setLoading(false)
+        }).catch(function (error) {
+            console.error(error);
+            setLoading(false)
+        });
+    }
     const getUserListing = (dataTo, dataFrom) => {
         let options = {}
         console.log(searchBy, "Seacrh by of Listing", search)
@@ -79,7 +109,6 @@ const ListingPage = () => {
     return (
         <div className='bg-gray-100 p-8'>
 
-            <p>{to}{"   "} {from}</p>
             <div className='flex justify-between my-2'>
                 <div>
                     <p className='text-xs text-gray-600'>Operator manage</p>
@@ -110,6 +139,7 @@ const ListingPage = () => {
                                     onClick={() => {
                                         getUserListing(to, from)
                                         setFilter(prev => !prev)
+                                        getUserListingForSearch()
                                     }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 bg-white" fill="none" viewBox="0 0 24 24" stroke="blue" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -118,6 +148,7 @@ const ListingPage = () => {
                                     <button className='bg-white rounded w-7 h-7 flex items-center justify-center' onClick={() => {
                                         setFilter(prev => !prev)
                                         setSearch('')
+                                        getUserListing(0, 10)
                                     }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -166,7 +197,7 @@ const ListingPage = () => {
                                         {u.IsVehicle && <img src='/vehicle.png' className='w-4 object-cover mr-1' alt="image" />}
                                         {u.IsDriver && <img src='/driver.png' className='w-4 object-cover mr-1' alt="image" />}
                                         {u.IsReports && <img src='/documents.png' className='w-4 object-cover mr-1' alt="image" />}
-                                        {u.IsSchedule && <img src='/timetable.png' className='w-4 object-cover mr-1' alt="image" />}
+                                        {u.IsSheild && <img src='/shield.png' className='w-4 object-cover mr-1' alt="image" />}
                                         {u.IsNotifications && <img src='/email.png' className='w-4 object-cover mr-1' alt="image" />}
 
                                     </td>
