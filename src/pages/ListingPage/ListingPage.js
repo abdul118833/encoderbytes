@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ReactPaginate from 'react-paginate'
 import { Oval } from 'react-loader-spinner'
-const token = localStorage.getItem('token') && localStorage.getItem('token')
-const authToken =
-    "Bearer " + token;
 
 const ListingPage = () => {
     let user = useSelector(state => state.userSlice.userData)
